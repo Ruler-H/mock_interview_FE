@@ -36,7 +36,7 @@ const signupPage = `
             <input type="password" class="form-control pass2-inp" id="floatingPassword password2" placeholder="Password config">
             <label for="floatingPassword">Password config</label>
         </div>
-        <button class="btn btn-primary w-100 py-2 signup-submit-btn" type="submit">Sign up</button>
+        <button class="btn btn-primary w-100 py-2 signup-submit-btn" type="button">Sign up</button>
     </form>`;
     
 const profilePage = (username, email) => `
