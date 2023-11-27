@@ -1,0 +1,325 @@
+/* common CSS */
+.card{
+	box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.card-text{
+	line-height: 2rem;
+}
+
+#loading-spinner{
+	width: 6rem;
+	height: 6rem;
+}
+
+.footer-area{
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	padding: 3rem;
+	background-color: rgb(252, 252, 254);
+	border-top: 0.2rem solid #c4c4c4;
+	position : absolute;
+	bottom : 0;
+}
+
+.ormi-img{
+	width: 3rem;
+	margin-right: 0.5rem;
+}
+
+.navbar-brand,
+.nav-menu{
+	font-size: 1.5rem;
+}
+
+.navbar-brand{
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+}
+
+.nav-header{
+	border-bottom: 0.2rem solid;
+	border-color: #c4c4c4;
+	margin-bottom: 1rem;
+}
+
+.nav{
+	width: 25rem;
+	display: flex;
+	justify-content: space-around;
+}
+
+.dropdown-item{
+	font-size: 1.2rem;
+}
+
+
+
+.main{
+	margin-top: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	width: 100%;
+	min-height: 40rem;
+}
+
+.card-group-title{
+	font-size: 2.5rem;
+	font-weight: bold;
+}
+
+.card-container{
+	display: flex;
+	width: 80%;
+	gap: 3rem;
+	justify-content: center;
+}
+
+.fP-card,
+.career-second-card,
+.jSP-card{
+	width: 15rem;
+	display: flex;
+	background-color: rgb(148, 203, 196);
+}
+
+.career-second-card{
+	background-color:rgb(229, 228, 224);
+}
+
+.fP-thirdCard,
+.job-second-card{
+	background-color:rgb(222, 194, 156);
+}
+
+.card-img{
+	width: 100%;
+}
+
+.fP-cardBody,
+.jSP-cardBody{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.fP-cardTitle,
+.jSP-cardTitle{
+	font-weight: bold;
+	font-size: 1.5rem;
+	color: white;
+}
+
+.career-second-card .fP-cardTitle{
+	color: black;
+}
+
+.fP-cardBody > .btn,
+.jSP-cardBody > .btn{
+	width: 100%;
+}
+
+.pre-btn{
+	margin-left: 26.5rem;
+	align-self: center;
+}
+
+.start-desc{
+	font-size: 2rem;
+	font-weight: bold;
+	line-height: 3rem;
+}
+
+.group-btn{
+	width: 20rem;
+	display: flex;
+	justify-content: space-between;
+	margin-top: 2rem;
+}
+
+/* interview & result & finalResult & BE & OFM CSS */
+.iP-container,
+.rP-container,
+.fRP-container,
+.BEP-container,
+.FEP-container,
+.OFMP-container{
+	min-width: 30rem;
+	min-height: 30rem;
+}
+
+.rP-cardHeader,
+.iP-cardHeader,
+.iP-cardFooter,
+.fRP-cardHeader,
+.BEP-cardHeader,
+.FEP-cardHeader,
+.OFMP-cardHeader{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 1rem;
+}
+
+/* interviewPage & resultPage & finalResultPage CSS */
+
+
+/* interviewPage CSS */
+.iP-question{
+	display: flex;
+	height: 10rem;
+	max-width: 28rem;
+}
+
+.iP-inputGroup{
+	height: 10rem;
+}
+
+.iP-textarea{
+	resize: none;
+}
+
+.iP-inputGroup > button{
+	background-color: #0d6efd;
+	color: white;
+}
+
+.iP-cardFooter{
+	justify-content: flex-end;
+}
+
+/* result & finalResult & BE & OFM CSS */
+.rP-cardBody,
+.fRP-cardBody,
+.BEP-cardBody,
+.FEP-cardBody,
+.OFMP-cardBody{
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	max-width: 30rem;
+}
+
+.rP-cardContent,
+.fRP-cardContent,
+.BEP-cardContent,
+.FEP-cardContent,
+.OFMP-cardContent{
+	width: 100%;
+	height: 10rem;
+	text-align: left;
+}
+
+.rP-questionPurpose,
+.rP-questionAnswer,
+.fRP-redeem,
+.BEP-subHeading,
+.FEP-subHeading,
+.OFMP-subHeading{
+	font-weight: bold;
+	font-size: 1.5rem;
+	margin: 0;
+	text-align: start;
+}
+
+.rP-hr,
+.fRP-hr,
+.BEP-hr,
+.FEP-hr,
+.OFMP-hr{
+	border: solid 0.1rem;
+	width: 100%;
+	margin: 0.5rem 0;
+}
+
+/* resultPage & finalResultPage & BEPage CSS */
+
+
+/* resultPage & finalResultPage CSS */
+.rP-nextBtn,
+.fRP-restartBtn{
+	margin-left: 23rem;
+}
+
+/* result & BE & OFM CSS */
+.rP-star,
+.BEP-star,
+.FEP-star,
+.OFMP-star{
+	width: 1rem;
+}
+
+
+/* resultPage CSS */
+.rP-rightHeader{
+	display: flex;
+	flex-direction: row;
+	gap: 1rem;
+}
+
+.rP-questionAnswer{
+	margin-top: 2rem;
+}
+
+/* finalResultPage CSS */
+
+/* BEPage & FEPage & OnlyForMePage CSS */
+.BEP-title,
+.FEP-title,
+.OFMP-title{
+	border-bottom: #c4c4c4 solid 0.2rem;
+	width: 68.5rem;
+}
+
+.BEP-h1,
+.FEP-h1,
+.OFMP-h1{
+	font-weight: bold;
+}
+
+.BEP-cardGroup,
+.FEP-cardGroup,
+.OFMP-cardGroup{
+	display: flex;
+	gap: 3rem;
+	width: 69rem;
+	flex-wrap: wrap;
+}
+
+.OFMP-cardGroup{
+	width: 63.5rem;
+}
+
+.BEP-subHeading,
+.FEP-subHeading,
+.OFMP-subHeading{
+	margin-top: 1rem;
+}
+
+.BEP-cardText{
+	display: inline-block;
+}
+
+/* BEPage & FEPage CSS */
+.BEP-arrow,
+.FEP-arrow{
+	width: 2rem;
+}
+
+.BEP-arrowContainer,
+.FEP-arrowContainer{
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+/* OnlyForMePage CSS */
+.OFMP-title{
+	border-bottom: #c4c4c4 solid 0.2rem;
+	width: 63rem;
+}

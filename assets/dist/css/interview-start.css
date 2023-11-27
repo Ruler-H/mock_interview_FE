@@ -1,0 +1,25 @@
+.ormi-img{
+	width: 3rem;
+	margin-right: 0.5rem;
+}
+
+.navbar-brand{
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+}
+
+.nav-header{
+	border-bottom: 0.2rem solid;
+	border-color: #c4c4c4;
+	margin-bottom: 1rem;
+}
+
+.idx-main{
+	margin-top: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	width: 100%;
+}

@@ -1,0 +1,72 @@
+.ormi-img{
+	width: 3rem;
+	margin-right: 0.5rem;
+}
+
+.navbar-brand{
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+}
+
+.nav-header{
+	border-bottom: 0.2rem solid;
+	border-color: #c4c4c4;
+	margin-bottom: 1rem;
+}
+
+.idx-main{
+	margin-top: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	width: 100%;
+}
+
+.card-group-title{
+	font-size: 2.5rem;
+	font-weight: bold;
+}
+
+.card-container{
+	display: flex;
+	width: 80%;
+	gap: 3rem;
+	justify-content: center;
+}
+
+.card{
+	width: 15rem;
+	display: flex;
+	background-color: rgb(148, 203, 196);
+}
+
+.card:nth-child(2){
+	background-color:rgb(222, 194, 156);
+}
+
+.card-img{
+	width: 100%;
+}
+
+.card-body{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.card-title{
+	font-weight: bold;
+	font-size: 1.5rem;
+	color: white;
+}
+
+.card-body > .btn{
+	width: 100%;
+}
+
+.pre-btn{
+	margin-left: 26.5rem;
+	align-self: center;
+}

@@ -1,0 +1,72 @@
+.ormi-img{
+	width: 3rem;
+	margin-right: 0.5rem;
+}
+
+.navbar-brand{
+	font-weight: bold;
+	display: flex;
+	align-items: center;
+}
+
+.nav-header{
+	border-bottom: 0.2rem solid;
+	border-color: #c4c4c4;
+	margin-bottom: 1rem;
+}
+
+.idx-main{
+	margin-top: 5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2rem;
+	width: 100%;
+}
+
+.card-header,
+.card-footer{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding: 1rem;
+}
+
+.card-footer{
+	justify-content: end;
+}
+
+.cd-container{
+	min-width: 30rem;
+	min-height: 30rem;
+}
+
+.card-body{
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.question{
+	display: flex;
+	height: 10rem;
+	max-width: 28rem;
+}
+
+.input-group{
+	height: 10rem;
+}
+
+.form-control{
+	resize: none;
+}
+
+.btn-primary{
+	align-self: flex-end;
+	margin-top: 1rem;
+}
+
+.input-group > button{
+	background-color: #0d6efd;
+	color: white;
+}
