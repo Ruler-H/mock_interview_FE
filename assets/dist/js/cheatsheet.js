@@ -122,77 +122,117 @@ const $navFE = document.querySelector('.nav-FE');
 // 클릭 시 BE Cheat Sheet 페이지로 이동
 function BEPPageRender() {
 	stopTimer();
-	data[0]['content'] = "assistant는 백엔드 기술 면접 전문가이다.";
-	data[1]['content'] = "백엔드 기술 면접 예시 질문 2개를 질문, 모범 답변, 질문 의도, 질문 난이도로 정리해서 한글로 답해줘. 질문 난이도는 상, 중, 하로 답변해주고, 오직 json 형태로만 응답주고, key 값으로는 question, answer, intent, difficulty로 응답해줘.";
 	loadingWithMask();
-	fetch(url, {
+	$.ajax({
 		method: "POST",
+		url: url + "interview/field_question/",
 		headers: {
 			"Content-Type": "application/json",
+			'Authorization': `Bearer ${accessToken}`,
 		},
-		body: JSON.stringify(data),
-		redirect: "follow",
-	}).then((res) => res.json()
-	).then((res) => res.choices[0].message.content
-	).then((res) => {
-		const queList = res.split('}');
-		const reformList = []
-		queList.forEach(que => {
-			queInfo = que.split("\n")
-			if (queInfo.length != 1) {
-				const queReform = {};
-				queInfo.forEach(info => {
-					if (info.includes(":")) {
-						console.log(info);
-						queContent = info.split(":")[1].trim().replaceAll('"', '').replaceAll(',', '');
-						if (info.includes("question")) {
-							queReform['question'] = queContent;
-						} else if(info.includes("answer")){
-							queReform['perfectAnswer'] = queContent;
-						} else if(info.includes("intent")){
-							queReform['intent'] = queContent;
-						} else if(info.includes("difficulty")){
-							queReform['difficulty'] = queContent;
-						}
+		data: JSON.stringify({"field":"BackEnd"}),
+		success: function(data) {
+			closeLoadingWithMask();
+			const reformList = data['question_list']
+			pageRender(BEPage(reformList[0]['difficulty'], reformList[0]['question'], reformList[0]['intent'], reformList[0]['perfectAnswer'], reformList[1]['difficulty'], reformList[1]['question'], reformList[1]['intent'], reformList[1]['perfectAnswer']));
+			// 즐겨찾기 별 변경
+			const $BEPStar1 = $main.querySelector('.BEP-star1');
+			let star1Id;
+			$BEPStar1.addEventListener('click', () => {
+				const starSrc = $BEPStar1.getAttribute('src')
+				if (starSrc.includes('empty-star.png')) {
+					$BEPStar1.setAttribute('src', "./assets/dist/images/star.png");
+					const question = reformList[0]
+					const data={
+						'grade':question['difficulty'],
+						'field':"BackEnd",
+						'question':question['question'],
+						'intent':question['intent'],
+						'model_answer':question['perfectAnswer'],
 					}
-				})
-				queReform['part'] = 'BackEnd';
-				reformList.push(queReform);
-			}
-		})
-		closeLoadingWithMask();
-		pageRender(BEPage(reformList[0]['difficulty'], reformList[0]['question'], reformList[0]['intent'], reformList[0]['perfectAnswer'], reformList[1]['difficulty'], reformList[1]['question'], reformList[1]['intent'], reformList[1]['perfectAnswer']));
-
-		// 즐겨찾기 별 변경
-		const $BEPStar1 = $main.querySelector('.BEP-star1');
-		$BEPStar1.addEventListener('click', () => {
-			const starSrc = $BEPStar1.getAttribute('src')
-			if (starSrc.includes('empty-star.png')) {
-				$BEPStar1.setAttribute('src', "./assets/dist/images/star.png");
-				favoriteQuestion.push(reformList[0]);
-			}
-			else {
-				$BEPStar1.setAttribute('src', "./assets/dist/images/empty-star.png");
-				favoriteQuestion = favoriteQuestion.filter((favQue) => favQue['question'] !== reformList[0]['question'])
-			}
-		})
-		const $BEPStar2 = $main.querySelector('.BEP-star2');
-		$BEPStar2.addEventListener('click', () => {
-			const starSrc = $BEPStar2.getAttribute('src')
-			if (starSrc.includes('empty-star.png')) {
-				$BEPStar2.setAttribute('src', "./assets/dist/images/star.png");
-				favoriteQuestion.push(reformList[1]);
-			}
-			else {
-				$BEPStar2.setAttribute('src', "./assets/dist/images/empty-star.png");
-				favoriteQuestion = favoriteQuestion.filter((favQue) => favQue['question'] !== reformList[1]['question'])
-			}
-		})
-		// 화살표 클릭 시 BEPage 다시 렌더링
-		const $BEPArrowContainer = $main.querySelector('.BEP-arrowContainer');
-		pageRenderByButton($BEPArrowContainer, BEPPageRender);
-	}).catch((err) => {
-		console.log(err);
+					$.ajax({
+						type: "POST",
+						url: url + "interview/favorite/",
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						data: JSON.stringify(data),
+						success: function(data){
+							star1Id = data['pk'];
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					});
+				}
+				else {
+					$BEPStar1.setAttribute('src', "./assets/dist/images/empty-star.png");
+					$.ajax({
+						type: "DELETE",
+						url: url + "interview/favorite/" + star1Id,
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					})
+				}
+			})
+			const $BEPStar2 = $main.querySelector('.BEP-star2');
+			let star2Id;
+			$BEPStar2.addEventListener('click', () => {
+				const starSrc = $BEPStar2.getAttribute('src')
+				if (starSrc.includes('empty-star.png')) {
+					$BEPStar2.setAttribute('src', "./assets/dist/images/star.png");
+					const question = reformList[1]
+					const data={
+						'grade':question['difficulty'],
+						'field':"BackEnd",
+						'question':question['question'],
+						'intent':question['intent'],
+						'model_answer':question['perfectAnswer'],
+					}
+					$.ajax({
+						type: "POST",
+						url: url + "interview/favorite/",
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						data: JSON.stringify(data),
+						success: function(data){
+							star2Id = data['pk'];
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					});
+				}
+				else {
+					$BEPStar2.setAttribute('src', "./assets/dist/images/empty-star.png");
+					$.ajax({
+						type: "DELETE",
+						url: url + "interview/favorite/" + star2Id,
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					})
+				}
+			})
+			// 화살표 클릭 시 BEPage 다시 렌더링
+			const $BEPArrowContainer = $main.querySelector('.BEP-arrowContainer');
+			pageRenderByButton($BEPArrowContainer, BEPPageRender);
+		},
+		error: function(error) {
+            console.log(error);
+        }
 	})
 };
 pageRenderByButton($navBE, BEPPageRender);
@@ -200,76 +240,117 @@ pageRenderByButton($navBE, BEPPageRender);
 // 클릭 시 FE Cheat Sheet 페이지로 이동
 function FEPageRender() {
 	stopTimer();
-	data[0]['content'] = "assistant는 프론트엔드 기술 면접 전문가이다.";
-	data[1]['content'] = "프론트엔드 기술 면접 예시 질문 2개를 질문, 모범 답변, 질문 의도, 질문 난이도로 정리해서 한글로 답해줘. 질문 난이도는 상, 중, 하로 답변해주고, 오직 json 형태로만 응답주고, key 값으로는 question, answer, intent, difficulty로 응답해줘.";
 	loadingWithMask();
-	fetch(url, {
+	$.ajax({
 		method: "POST",
+		url: url + "interview/field_question/",
 		headers: {
 			"Content-Type": "application/json",
+			'Authorization': `Bearer ${accessToken}`,
 		},
-		body: JSON.stringify(data),
-		redirect: "follow",
-	}).then((res) => res.json()
-	).then((res) => res.choices[0].message.content
-	).then((res) => {
-		const queList = res.split('}');
-		const reformList = []
-		queList.forEach(que => {
-			queInfo = que.split("\n")
-			if (queInfo.length != 1) {
-				const queReform = {};
-				queInfo.forEach(info => {
-					if (info.includes(":")) {
-						queContent = info.split(":")[1].trim().replaceAll('"', '').replaceAll(',', '');
-						if (info.includes("question")) {
-							queReform['question'] = queContent;
-						} else if(info.includes("answer")){
-							queReform['perfectAnswer'] = queContent;
-						} else if(info.includes("intent")){
-							queReform['intent'] = queContent;
-						} else if(info.includes("difficulty")){
-							queReform['difficulty'] = queContent;
-						}
+		data: JSON.stringify({"field":"FrontEnd"}),
+		success: function(data) {
+			closeLoadingWithMask();
+			const reformList = data['question_list']
+			pageRender(FEPage(reformList[0]['difficulty'], reformList[0]['question'], reformList[0]['intent'], reformList[0]['perfectAnswer'], reformList[1]['difficulty'], reformList[1]['question'], reformList[1]['intent'], reformList[1]['perfectAnswer']));
+			// 즐겨찾기 별 변경
+			const $FEPStar1 = $main.querySelector('.FEP-star1');
+			let star1Id;
+			$FEPStar1.addEventListener('click', () => {
+				const starSrc = $FEPStar1.getAttribute('src')
+				if (starSrc.includes('empty-star.png')) {
+					$FEPStar1.setAttribute('src', "./assets/dist/images/star.png");
+					const question = reformList[0]
+					const data={
+						'grade':question['difficulty'],
+						'field':"FrontEnd",
+						'question':question['question'],
+						'intent':question['intent'],
+						'model_answer':question['perfectAnswer'],
 					}
-				})
-				queReform['part'] = 'FrontEnd';
-				reformList.push(queReform);
-			}
-		})
-		closeLoadingWithMask();
-		pageRender(FEPage(reformList[0]['difficulty'], reformList[0]['question'], reformList[0]['intent'], reformList[0]['perfectAnswer'], reformList[1]['difficulty'], reformList[1]['question'], reformList[1]['intent'], reformList[1]['perfectAnswer']));
-
-		// 즐겨찾기 별 변경
-		const $FEPStar1 = $main.querySelector('.FEP-star1');
-		$FEPStar1.addEventListener('click', () => {
-			const starSrc = $FEPStar1.getAttribute('src')
-			if (starSrc.includes('empty-star.png')) {
-				$FEPStar1.setAttribute('src', "./assets/dist/images/star.png");
-				favoriteQuestion.push(reformList[0]);
-			}
-			else {
-				$FEPStar1.setAttribute('src', "./assets/dist/images/empty-star.png");
-				favoriteQuestion = favoriteQuestion.filter((favQue) => favQue['question'] !== reformList[0]['question'])
-			}
-		})
-		const $FEPStar2 = $main.querySelector('.FEP-star2');
-		$FEPStar2.addEventListener('click', () => {
-			const starSrc = $FEPStar2.getAttribute('src')
-			if (starSrc.includes('empty-star.png')) {
-				$FEPStar2.setAttribute('src', "./assets/dist/images/star.png");
-				favoriteQuestion.push(reformList[1]);
-			}
-			else {
-				$FEPStar2.setAttribute('src', "./assets/dist/images/empty-star.png");
-				favoriteQuestion = favoriteQuestion.filter((favQue) => favQue['question'] !== reformList[1]['question'])
-			}
-		})
-		// 화살표 클릭 시 FEPage 다시 렌더링
-		const $FEPArrowContainer = $main.querySelector('.FEP-arrowContainer');
-		pageRenderByButton($FEPArrowContainer, FEPageRender);
-	}).catch((err) => {
-		console.log(err);
+					$.ajax({
+						type: "POST",
+						url: url + "interview/favorite/",
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						data: JSON.stringify(data),
+						success: function(data){
+							star1Id = data['pk'];
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					});
+				}
+				else {
+					$FEPStar1.setAttribute('src', "./assets/dist/images/empty-star.png");
+					$.ajax({
+						type: "DELETE",
+						url: url + "interview/favorite/" + star1Id,
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					})
+				}
+			})
+			const $FEPStar2 = $main.querySelector('.FEP-star2');
+			let star2Id;
+			$FEPStar2.addEventListener('click', () => {
+				const starSrc = $FEPStar2.getAttribute('src')
+				if (starSrc.includes('empty-star.png')) {
+					$FEPStar2.setAttribute('src', "./assets/dist/images/star.png");
+					const question = reformList[1]
+					const data={
+						'grade':question['difficulty'],
+						'field':"FrontEnd",
+						'question':question['question'],
+						'intent':question['intent'],
+						'model_answer':question['perfectAnswer'],
+					}
+					$.ajax({
+						type: "POST",
+						url: url + "interview/favorite/",
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						data: JSON.stringify(data),
+						success: function(data){
+							star2Id = data['pk'];
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					});
+				}
+				else {
+					$FEPStar2.setAttribute('src', "./assets/dist/images/empty-star.png");
+					$.ajax({
+						type: "DELETE",
+						url: url + "interview/favorite/" + star2Id,
+						headers: {
+							"Content-Type": "application/json",
+							'Authorization': `Bearer ${accessToken}`,
+						},
+						error: function(err) {
+							console.log(err);
+						}
+					})
+				}
+			})
+			// 화살표 클릭 시 BEPage 다시 렌더링
+			const $FEPArrowContainer = $main.querySelector('.FEP-arrowContainer');
+			pageRenderByButton($FEPArrowContainer, FEPageRender);
+		},
+		error: function(error) {
+            console.log(error);
+        }
 	})
 };
 pageRenderByButton($navFE, FEPageRender);

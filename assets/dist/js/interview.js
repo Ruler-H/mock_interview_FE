@@ -295,7 +295,7 @@ function resultPageRender() {
 		starSrc = $rPStar.getAttribute('src')
 		if (starSrc.includes('empty-star.png')) {
 			$rPStar.setAttribute('src', "./assets/dist/images/star.png");
-			question = question_list[question_list.length - 1]
+			const question = question_list[question_list.length - 1]
 			const data={
                 'grade':question['difficulty'],
                 'field':questionField,

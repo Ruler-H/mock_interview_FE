@@ -165,7 +165,6 @@ function chatListLoad() {
     }).then(res => res.json()
     ).then(datas => {
         for (let i = 0; i < datas.length; i++) {
-            console.log('iter');
             message = datas[i]["message"];
             if (message === "") {
                 message = "이전 채팅 내용이 없습니다.";
