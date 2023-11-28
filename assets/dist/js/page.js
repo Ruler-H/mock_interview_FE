@@ -11,19 +11,7 @@ const $main = document.querySelector('.main');
 const $navOFM = document.querySelector('.nav-OFM');
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
-
-
 const url = "http://127.0.0.1:8000/";
-const data = [{
-	"role": "system",
-	"content": ""
-}, {
-	"role": "user",
-	"content": ""
-}];
-
-const questionList = [];
-let favoriteQuestion = [];
 
 function loadingWithMask(gif) {
 	//화면의 높이와 너비를 구합니다.

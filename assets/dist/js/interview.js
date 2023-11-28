@@ -133,6 +133,7 @@ let timer_sec;
 let timer_min;
 let question_list;
 let qIdx = 0;
+let favorite_id;
 const $navBrand = document.querySelector('.navbar-brand');
 const $mockITV = document.querySelector('.mock-ITV');
 
@@ -145,16 +146,29 @@ function stopTimer() {
 
 // 메인 화면, 경력 선택 페이지 렌더링
 function firstPageRender() {
-	stopTimer();
-	pageRender(firstPage);
+	$.ajax({
+		type: "GET",
+		url: url + "account/status/",
+		headers: {
+			'Authorization': `Bearer ${accessToken}`,
+		},
+		success: function(data){
+			stopTimer();
+			pageRender(firstPage);
 
-	const $careerSelectBtn = $main.querySelectorAll('.career-select-btn');
-	$careerSelectBtn.forEach((btn) => {
-		pageRenderByButton(btn, () => {
-			jobSelectPageRender();
-			questionLevel = btn.dataset['title'];
-		});
+			const $careerSelectBtn = $main.querySelectorAll('.career-select-btn');
+			$careerSelectBtn.forEach((btn) => {
+				pageRenderByButton(btn, () => {
+					jobSelectPageRender();
+					questionLevel = btn.dataset['title'];
+				});
+			});
+		},
+		error: function(error) {
+			loginPageLoad();
+		}
 	});
+	
 	
 };
 pageRenderByButton($navBrand, firstPageRender)
@@ -180,6 +194,7 @@ function jobSelectPageRender() {
 // 모의 면접 시작 페이지 렌더링 메서드
 function interviewStartPageRender() {
 	pageRender(interviewStartPage(questionField, questionLevel));
+	qIdx = 0;
 
 	const $jobSelectBtns = $main.querySelectorAll('.job-select-btn');
 	$jobSelectBtns.forEach((btn) => {
@@ -216,7 +231,6 @@ function interviewStartPageRender() {
 
 // 모의 면접 문제 페이지 렌더링 메서드
 function interviewPageRender() {
-	console.log(question_list);
 	pageRender(interviewPage(question_list[qIdx]['difficulty'], qIdx + 1, question_list[qIdx]['question']));
 
 	let micro = parseInt(document.querySelector(".micro").innerText);
@@ -260,7 +274,12 @@ function interviewPageRender() {
 	const $submitBtn = $main.querySelector('.submit-btn');
 	pageRenderByButton($submitBtn, () => {
 		stopTimer();
-		questionList[qIdx]['answer'] = $main.querySelector('.iP-textarea').value;
+		if (qIdx === 10){
+			stopTimer();
+		}else{
+			stopTimer();
+			question_list[qIdx]["answer"] = $main.querySelector('.iP-textarea').value;
+		}
 		resultPageRender();
 	});
 	qIdx += 1;
@@ -268,7 +287,7 @@ function interviewPageRender() {
 
 // 모의 면접 단위 결과 페이지 렌더링
 function resultPageRender() {
-	pageRender(resultPage(question_list[questionList.length - 1]['difficulty'], question_list.length, question_list[questionList.length - 1]['intent'], question_list[question_list.length - 1]['perfectAnswer']));
+	pageRender(resultPage(question_list[question_list.length - 1]['difficulty'], qIdx, question_list[question_list.length - 1]['intent'], question_list[question_list.length - 1]['perfectAnswer']));
 
 	// 즐겨찾기 별 변경
 	const $rPStar = $main.querySelector('.rP-star');
@@ -276,17 +295,49 @@ function resultPageRender() {
 		starSrc = $rPStar.getAttribute('src')
 		if (starSrc.includes('empty-star.png')) {
 			$rPStar.setAttribute('src', "./assets/dist/images/star.png");
-			favoriteQuestion.push(question_list[question_list.length - 1]);
+			question = question_list[question_list.length - 1]
+			const data={
+                'grade':question['difficulty'],
+                'field':questionField,
+                'question':question['question'],
+                'intent':question['intent'],
+                'model_answer':question['perfectAnswer'],
+            }
+			$.ajax({
+				type: "POST",
+				url: url + "interview/favorite/",
+				headers: {
+					"Content-Type": "application/json",
+					'Authorization': `Bearer ${accessToken}`,
+				},
+				data: JSON.stringify(data),
+				success: function(data){
+					favorite_id = data['pk'];
+				},
+				error: function(err) {
+					console.log(err);
+				}
+			});
 		}
 		else {
 			$rPStar.setAttribute('src', "./assets/dist/images/empty-star.png");
-			favoriteQuestion.pop();
+			$.ajax({
+				type: "DELETE",
+				url: url + "interview/favorite/" + favorite_id,
+				headers: {
+					"Content-Type": "application/json",
+					'Authorization': `Bearer ${accessToken}`,
+				},
+				error: function(err) {
+					console.log(err);
+				}
+			})
 		}
 	});
 
 	// 다음 문제 버튼
 	const $nextBtn = $main.querySelector('.rP-nextBtn')
-	if (questionList.length == 10) {
+	if (qIdx === 10) {
 		$nextBtn.innerText = "다시하기"
 		pageRenderByButton($nextBtn, firstPageRender);
 	} else {
@@ -294,17 +345,4 @@ function resultPageRender() {
 	}
 }
 
-
-$.ajax({
-	type: "GET",
-	url: url + "account/status/",
-	headers: {
-		'Authorization': `Bearer ${accessToken}`,
-	},
-	success: function(data){
-		firstPageRender();
-	},
-	error: function(error) {
-		loginPageLoad();
-	}
-});
+firstPageRender();
