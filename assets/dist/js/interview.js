@@ -126,6 +126,13 @@ const finalResultPage = `
 <a type="button" class="btn btn-primary btn-lg fRP-restartBtn">다시하기</a>
 `
 
+let questionLevel;
+let questionField;
+let timer_micro;
+let timer_sec;
+let timer_min;
+let question_list;
+let qIdx = 0;
 const $navBrand = document.querySelector('.navbar-brand');
 const $mockITV = document.querySelector('.mock-ITV');
 
@@ -180,92 +187,88 @@ function interviewStartPageRender() {
 	});
 
 	const $interViewStartBtn = $main.querySelector('.interview-start-btn');
-	pageRenderByButton($interViewStartBtn, interviewPageRender);
+	$interViewStartBtn.addEventListener('click', () => {
+		const data = {
+			"career": questionLevel,
+			"field": questionField,
+		}
+		loadingWithMask();
+		$.ajax({
+			type: "POST",
+			url: url + "interview/question/",
+			headers: {
+				"Content-Type": "application/json",
+				'Authorization': `Bearer ${accessToken}`,
+			},
+			data: JSON.stringify(data),
+			success: function(data){
+				closeLoadingWithMask();
+				question_list = data["question_list"];
+				interviewPageRender();	
+			},
+			error: function(err) {
+				closeLoadingWithMask();
+				console.log(err);
+			}
+		});
+	})
 }
 
 // 모의 면접 문제 페이지 렌더링 메서드
 function interviewPageRender() {
+	console.log(question_list);
+	pageRender(interviewPage(question_list[qIdx]['difficulty'], qIdx + 1, question_list[qIdx]['question']));
 
-	data[0]['content'] = "assistant는 " + questionLevel + " " + questionField + " 기술 면접 전문가이다.";
-	data[1]['content'] = questionLevel + " " + questionField + " 기술 면접 예시 질문 1개를 질문, 모범 답변, 질문 의도, 질문 난이도로 정리해서 한글로 답해줘. 질문 난이도는 상, 중, 하로 답변해주고, 오직 json 형태로만 응답주고, key 값으로는 question, answer, intent, difficulty로 응답해줘.";
-	loadingWithMask();
-	fetch(url, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify(data),
-		redirect: "follow",
-	}).then((res) => res.json()
-	).then((res) => res.choices[0].message.content
-	).then((res) => {
-		const resList = res.split('\n');
-		const reformList = {
-			"question": resList[1].split(":")[1].trim().replace('"', '').slice(0, -2),
-			"perfectAnswer": resList[2].split(":")[1].trim().replace('"', '').slice(0, -2),
-			"intent": resList[3].split(":")[1].trim().replace('"', '').slice(0, -2),
-			"difficulty": resList[4].split(":")[1].trim().replace('"', '').slice(0, 1),
-			"part": questionField
-		};
-		closeLoadingWithMask();
-		pageRender(interviewPage(reformList['difficulty'], questionList.length + 1, reformList['question']));
+	let micro = parseInt(document.querySelector(".micro").innerText);
+	let sec = parseInt(document.querySelector(".sec").innerText);
+	let min = parseInt(document.querySelector(".min").innerText);
 
-		let timer = 0;
+	timer_micro = setInterval(() => {
+		micro++;
+		if (micro == 100) {
+			micro = "00";
+		} else if (micro < 10) {
+			micro = "0" + micro;
+		}
+		document.querySelector(".micro").innerText = micro;
+	}, 10);
 
-		let micro = parseInt(document.querySelector(".micro").innerText);
-		let sec = parseInt(document.querySelector(".sec").innerText);
-		let min = parseInt(document.querySelector(".min").innerText);
+	//start seconds
+	timer_sec = setInterval(() => {
+		sec++;
+		if (sec == 60) {
+			sec = "00";
+		} else if (sec < 10) {
+			sec = "0" + sec;
+		}
+		document.querySelector(".sec").innerText = sec;
+	}, 1000);
 
-		timer_micro = setInterval(() => {
-			micro++;
-			if (micro == 100) {
-				micro = "00";
-			} else if (micro < 10) {
-				micro = "0" + micro;
-			}
-			document.querySelector(".micro").innerText = micro;
-		}, 10);
+	//start minutes
+	timer_min = setInterval(() => {
+		min++;
 
-		//start seconds
-		timer_sec = setInterval(() => {
-			sec++;
-			if (sec == 60) {
-				sec = "00";
-			} else if (sec < 10) {
-				sec = "0" + sec;
-			}
-			document.querySelector(".sec").innerText = sec;
-		}, 1000);
+		if (min == 60) {
+			min = 0;
+		} else if (min < 10) {
+			min = "0" + min;
+		}
 
-		//start minutes
-		timer_min = setInterval(() => {
-			min++;
+		document.querySelector(".min").innerText = min;
+	}, 60000);
 
-			if (min == 60) {
-				min = 0;
-			} else if (min < 10) {
-				min = "0" + min;
-			}
-
-			document.querySelector(".min").innerText = min;
-		}, 60000);
-
-		const $submitBtn = $main.querySelector('.submit-btn');
-		pageRenderByButton($submitBtn, () => {
-			stopTimer();
-			reformList['answer'] = $main.querySelector('.iP-textarea').value;
-			questionList.push(reformList);
-			resultPageRender();
-		});
-
-	}).catch((err) => {
-		console.log(err);
-	})
+	const $submitBtn = $main.querySelector('.submit-btn');
+	pageRenderByButton($submitBtn, () => {
+		stopTimer();
+		questionList[qIdx]['answer'] = $main.querySelector('.iP-textarea').value;
+		resultPageRender();
+	});
+	qIdx += 1;
 }
 
 // 모의 면접 단위 결과 페이지 렌더링
 function resultPageRender() {
-	pageRender(resultPage(questionList[questionList.length - 1]['difficulty'], questionList.length, questionList[questionList.length - 1]['intent'], questionList[questionList.length - 1]['perfectAnswer']));
+	pageRender(resultPage(question_list[questionList.length - 1]['difficulty'], question_list.length, question_list[questionList.length - 1]['intent'], question_list[question_list.length - 1]['perfectAnswer']));
 
 	// 즐겨찾기 별 변경
 	const $rPStar = $main.querySelector('.rP-star');
@@ -273,7 +276,7 @@ function resultPageRender() {
 		starSrc = $rPStar.getAttribute('src')
 		if (starSrc.includes('empty-star.png')) {
 			$rPStar.setAttribute('src', "./assets/dist/images/star.png");
-			favoriteQuestion.push(questionList[questionList.length - 1]);
+			favoriteQuestion.push(question_list[question_list.length - 1]);
 		}
 		else {
 			$rPStar.setAttribute('src', "./assets/dist/images/empty-star.png");
@@ -291,4 +294,17 @@ function resultPageRender() {
 	}
 }
 
-firstPageRender();
+
+$.ajax({
+	type: "GET",
+	url: url + "account/status/",
+	headers: {
+		'Authorization': `Bearer ${accessToken}`,
+	},
+	success: function(data){
+		firstPageRender();
+	},
+	error: function(error) {
+		loginPageLoad();
+	}
+});

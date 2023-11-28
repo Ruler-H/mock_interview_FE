@@ -12,11 +12,7 @@ const $navOFM = document.querySelector('.nav-OFM');
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
 
-let questionLevel;
-let questionField;
-let timer_micro;
-let timer_sec;
-let timer_min;
+
 const url = "http://127.0.0.1:8000/";
 const data = [{
 	"role": "system",

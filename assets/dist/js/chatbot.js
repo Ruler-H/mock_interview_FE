@@ -1,13 +1,13 @@
 const chatbotPage = `
 <div class="d-flex w-100">
     <div class="d-flex flex-column align-items-stretch flex-shrink-0 bg-body-tertiary h-100" style="width: 235px; max-height: 660px; overflow: auto;">
-        <a class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom chat-create">
+        <button type="button" class="d-flex align-items-center flex-shrink-0 p-3 link-body-emphasis text-decoration-none border-bottom chat-create">
             <svg class="bi pe-none me-2" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
             <span class="fs-5 fw-semibold">채팅방 목록</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1  0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg>
-        </a>
+        </button>
     <div class="chat-list">
     </div>
 </div>
@@ -30,80 +30,95 @@ const $techChat = document.querySelector('.tech-chat');
 
 function messageInputEvent(){
     const $messageList = document.querySelector('.message-list');
-    const $qBtn = document.querySelector('.q-btn');
-    $qBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        const $qInp = document.querySelector(".q-inp");
-        const userTag = `
-        <span class="sc-knefzF PVUie" style="display:block; text-align:right;">User</span>
-        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-            <div class="col p-4 d-flex flex-column position-static" style="background-color:rgb(100, 70, 255); color: rgb(255, 255, 255);";>
-                ${$qInp.value}
-            </div>
-        </div>`
-        $messageList.innerHTML += userTag;
-        const span = document.createElement('span');
-        span.className = "sc-knefzF PVUie";
-        span.textContent = "Tech Chatbot";
-        $messageList.appendChild(span);
-        const div = document.createElement('div');
-        div.className = "row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative";
-        const childDiv = document.createElement('div');
-        childDiv.className = "col p-4 d-flex flex-column position-static";
-        childDiv.style = "background-color:rgb(242, 247, 255)";
-        div.appendChild(childDiv);
-        $messageList.appendChild(div);
-        const chatId = document.querySelector('.chat-id');
-        console.log(chatId);
-        const data = {
-            "room_pk":chatId.textContent,
-            "question":$qInp.value,
-        }
-        console.log(data);
-        fetch(url + "chatbot/answer/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify(data),
-        }).then(res => res.json()
-        ).then(data => {
-            childDiv.textContent = data['answer'];
-        })
+    const $qInp = document.querySelector(".q-inp");
+    const userTag = `
+    <span class="sc-knefzF PVUie" style="display:block; text-align:right;">User</span>
+    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+        <div class="col p-4 d-flex flex-column position-static" style="background-color:rgb(100, 70, 255); color: rgb(255, 255, 255);";>
+            ${$qInp.value}
+        </div>
+    </div>`
+    $messageList.innerHTML += userTag;
+    const span = document.createElement('span');
+    span.className = "sc-knefzF PVUie";
+    span.textContent = "Tech Chatbot";
+    $messageList.appendChild(span);
+    const div = document.createElement('div');
+    div.className = "row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative";
+    const childDiv = document.createElement('div');
+    childDiv.className = "col p-4 d-flex flex-column position-static";
+    childDiv.style = "background-color:rgb(242, 247, 255)";
+    div.appendChild(childDiv);
+    $messageList.appendChild(div);
+    const chatId = document.querySelector('.chat-id');
+    console.log(chatId);
+    const data = {
+        "room_pk":chatId.textContent,
+        "question":$qInp.value,
+    }
+    console.log(data);
+    fetch(url + "chatbot/answer/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+    }).then(res => res.json()
+    ).then(data => {
+        childDiv.textContent = data['answer'];
     })
 }
 
 function chatCreateEvent() {
-    fetch(url + "account/status/", {
+    $.ajax({
+        type: "GET",
+        url: url + "account/status/",
         headers: {
             'Authorization': `Bearer ${accessToken}`,
         },
-    }).then(async (res) => {
-        const data = await res.json();
-        fetch(url + 'chatbot/', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({
-                "client": data["pk"],
-            }),
-        }).then(res => res.json()
-        ).then(data => {
-            console.log(data);
-            chatbotPageLoad();
-        }).catch(error => {
-            console.error('Error:', error);
-        });
-    }).catch(error => {
-        console.error('Error:', error);
+        success: function(data){
+            $.ajax({
+                type: "POST",
+                url: url + "chatbot/",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${accessToken}`,
+                },
+                data: JSON.stringify({"client":data["pk"]}),
+                success: function(res) {
+                    chatbotPageLoad();
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            })
+        },
+        error: function(error) {
+            console.log(error);
+        }
     });
-    chatListLoad();
+    return false;
 }
 
-function messageListLoad(messages) {
+function chatDelete(){
+    const $chatId = document.querySelector(".chat-id");
+    $.ajax({
+        type: "DELETE",
+        url: url + "chatbot/" + $chatId.textContent + "/",
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        success: function(res) {
+            chatbotPageLoad();
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    })
+}
+
+function messageListLoad(messages, chat_pk) {
     const $messageList = document.querySelector('.message-list');
     let child = ''
     for(let i = 0; i < messages.length; i++){
@@ -130,6 +145,14 @@ function messageListLoad(messages) {
         }
     }
     $messageList.innerHTML = child;
+    const btn = document.createElement('button');
+    btn.className = "btn btn-dark rounded-pill px-3"
+    btn.type = "button"
+    btn.textContent = "채팅방 삭제"
+    btn.addEventListener("click", () => {
+        chatDelete();
+    })
+    $messageList.insertBefore(btn, $messageList.firstChild);
 }
 
 
@@ -142,6 +165,7 @@ function chatListLoad() {
     }).then(res => res.json()
     ).then(datas => {
         for (let i = 0; i < datas.length; i++) {
+            console.log('iter');
             message = datas[i]["message"];
             if (message === "") {
                 message = "이전 채팅 내용이 없습니다.";
@@ -163,7 +187,7 @@ function chatListLoad() {
                     },
                 }).then(res => res.json()
                 ).then(messages => {
-                    messageListLoad(messages);
+                    messageListLoad(messages, datas[i]['id']);
                 })
             });
             $chatList.appendChild(div);
@@ -174,29 +198,33 @@ function chatListLoad() {
 function chatbotPageLoad() {
     pageRender(chatbotPage);
     const $chatCreate = document.querySelector('.chat-create');
-    $chatCreate.addEventListener('click', (event) => {
-        event.defaultPrevented();
+    $chatCreate.addEventListener('click', function (e) {
+        e.preventDefault();
         chatCreateEvent();
     })
     chatListLoad();
-    messageInputEvent();
+    const $qBtn = document.querySelector('.q-btn');
+    $qBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        messageInputEvent();
+    })
+    
 }
 
-$techChat.addEventListener('click', () => {
-    fetch(url + 'account/status/', {
+$techChat.addEventListener('click', (e) => {
+    $.ajax({
+        type: "GET",
+        url: url + "account/status/",
         headers: {
             'Authorization': `Bearer ${accessToken}`,
         },
-    }).then(async (res) => {
-        const data = await res.json();
-        if (res.ok) {
+        success: function(data){
             chatbotPageLoad();
-        } else {
+        },
+        error: function(error) {
             loginPageLoad();
         }
-    }).catch(error => {
-        console.error('Error:', error);
     });
-
+    return false;
 });
 
