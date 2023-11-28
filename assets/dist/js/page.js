@@ -1,7 +1,7 @@
 const $main = document.querySelector('.main');
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
-const url = "http://127.0.0.1:8000/";
+const url = "http://54.180.195.123/";
 
 function loadingWithMask(gif) {
 	//화면의 높이와 너비를 구합니다.
