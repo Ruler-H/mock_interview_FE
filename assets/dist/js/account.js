@@ -131,7 +131,7 @@ function profileUpdatePageLoad(username, email, pk){
             if(res.ok){
                 authreload();
                 firstPageRender();
-                // location.reload(true);
+                location.reload(true);
             }else{
                 const errMsg = document.querySelector('.err-msg');
                 errMsg.setAttribute('style', '');
@@ -189,7 +189,7 @@ function profilePageLoad(data){
             if (res.status === 204) {
                 localStorage.clear();
                 firstPageRender();
-                // location.reload(true);
+                location.reload(true);
             }else{
                 const errMsg = document.querySelector('.err-msg');
                 console.log(res.json());

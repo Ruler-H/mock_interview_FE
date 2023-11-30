@@ -282,20 +282,20 @@ function interviewPageRender() {
 		}
 		resultPageRender();
 	});
-	qIdx += 1;
+	
 }
 
 // 모의 면접 단위 결과 페이지 렌더링
 function resultPageRender() {
-	pageRender(resultPage(question_list[question_list.length - 1]['difficulty'], qIdx, question_list[question_list.length - 1]['intent'], question_list[question_list.length - 1]['perfectAnswer']));
-
+	pageRender(resultPage(question_list[qIdx]['difficulty'], qIdx + 1, question_list[qIdx]['intent'], question_list[qIdx]['perfectAnswer']));
+	qIdx += 1;
 	// 즐겨찾기 별 변경
 	const $rPStar = $main.querySelector('.rP-star');
 	$rPStar.addEventListener('click', () => {
 		starSrc = $rPStar.getAttribute('src')
 		if (starSrc.includes('empty-star.png')) {
 			$rPStar.setAttribute('src', "./assets/dist/images/star.png");
-			const question = question_list[question_list.length - 1]
+			const question = question_list[qIdx]
 			const data={
                 'grade':question['difficulty'],
                 'field':questionField,
